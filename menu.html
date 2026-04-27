@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>QuickBite – Menu</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #212121; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; }
+  .topbar {
+    background: #FFC107; padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar h1 { color: #212121; font-size: 22px; font-weight: 900; }
+  .topbar-right { display: flex; gap: 8px; }
+  .icon-btn {
+    background: #212121; color: #FFC107; border: none;
+    border-radius: 10px; padding: 8px 12px; font-size: 14px;
+    font-weight: 700; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .categories {
+    display: flex; gap: 8px; padding: 14px 16px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .categories::-webkit-scrollbar { display: none; }
+  .cat-btn {
+    background: #2c2c2c; color: #aaa; border: 1.5px solid #444;
+    border-radius: 20px; padding: 7px 16px; font-size: 13px;
+    font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+  }
+  .cat-btn.active { background: #FFC107; color: #212121; border-color: #FFC107; }
+  .section-title { color: #FFC107; font-size: 13px; font-weight: 700; padding: 0 16px 10px; letter-spacing: 1px; text-transform: uppercase; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+  .card {
+    background: #2c2c2c; border-radius: 16px; overflow: hidden;
+    transition: transform 0.15s;
+  }
+  .card:active { transform: scale(0.97); }
+  .food-emoji { font-size: 52px; text-align: center; padding: 18px 0 8px; background: #333; }
+  .card-body { padding: 10px 12px 12px; }
+  .food-name { color: #fff; font-size: 14px; font-weight: 700; }
+  .food-cat { color: #888; font-size: 11px; margin-top: 2px; }
+  .food-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+  .food-price { color: #FFC107; font-size: 16px; font-weight: 800; }
+  .add-btn {
+    background: #FFC107; color: #212121; border: none;
+    border-radius: 8px; padding: 6px 10px; font-size: 18px;
+    font-weight: 900; cursor: pointer; line-height: 1;
+    transition: transform 0.1s;
+  }
+  .add-btn:active { transform: scale(0.9); }
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: #FFC107; color: #212121; padding: 10px 22px;
+    border-radius: 20px; font-weight: 700; font-size: 14px;
+    opacity: 0; transition: opacity 0.3s; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+  .bottombar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #FFC107; display: flex; justify-content: space-around;
+    padding: 10px 0; z-index: 100;
+  }
+  .bottombar a {
+    text-decoration: none; color: #212121; font-size: 11px;
+    font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .bottombar a span { font-size: 20px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>⚡ QuickBite</h1>
+  <div class="topbar-right">
+    <a class="icon-btn" href="cart.html" id="cart-btn">🛒 <span id="cart-count">0</span></a>
+    <a class="icon-btn" href="profile.html">👤</a>
+  </div>
+</div>
+
+<div class="categories">
+  <button class="cat-btn active" onclick="filterCat('All', this)">🍽 All</button>
+  <button class="cat-btn" onclick="filterCat('Pizza', this)">🍕 Pizza</button>
+  <button class="cat-btn" onclick="filterCat('Burger', this)">🍔 Burger</button>
+  <button class="cat-btn" onclick="filterCat('Indian', this)">🍛 Indian</button>
+  <button class="cat-btn" onclick="filterCat('Drinks', this)">🧃 Drinks</button>
+  <button class="cat-btn" onclick="filterCat('Desserts', this)">🍰 Desserts</button>
+</div>
+
+<p class="section-title">Our Menu</p>
+
+<div class="grid" id="food-grid">
+  <!-- Injected by JS -->
+</div>
+
+<div class="toast" id="toast">Added to cart! ✅</div>
+
+<div class="bottombar">
+  <a href="menu.html"><span>🍽</span>Menu</a>
+  <a href="cart.html"><span>🛒</span>Cart</a>
+  <a href="history.html"><span>📋</span>Orders</a>
+  <a href="profile.html"><span>👤</span>Profile</a>
+</div>
+
+<script>
+const FOODS = [
+  { id: 1, name: 'Margherita Pizza', cat: 'Pizza', price: 150, emoji: '🍕' },
+  { id: 2, name: 'Paneer Burger', cat: 'Burger', price: 120, emoji: '🍔' },
+  { id: 3, name: 'Chicken Burger', cat: 'Burger', price: 140, emoji: '🍗' },
+  { id: 4, name: 'Dal Makhani', cat: 'Indian', price: 110, emoji: '🍛' },
+  { id: 5, name: 'Paneer Tikka', cat: 'Indian', price: 160, emoji: '🔥' },
+  { id: 6, name: 'French Fries', cat: 'Sides', price: 60, emoji: '🍟' },
+  { id: 7, name: 'Mango Lassi', cat: 'Drinks', price: 70, emoji: '🥭' },
+  { id: 8, name: 'Gulab Jamun', cat: 'Desserts', price: 80, emoji: '🍮' },
+  { id: 9, name: 'Veg Pizza', cat: 'Pizza', price: 130, emoji: '🌿' },
+  { id: 10, name: 'Cold Coffee', cat: 'Drinks', price: 90, emoji: '☕' },
+];
+
+function getCart() { return JSON.parse(localStorage.getItem('cart') || '[]'); }
+function saveCart(c) { localStorage.setItem('cart', JSON.stringify(c)); }
+
+function updateCartBadge() {
+  const count = getCart().reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cart-count').textContent = count;
+}
+
+function addToCart(id) {
+  const food = FOODS.find(f => f.id === id);
+  let cart = getCart();
+  const existing = cart.find(i => i.id === id);
+  if (existing) existing.qty++;
+  else cart.push({ ...food, qty: 1 });
+  saveCart(cart);
+  updateCartBadge();
+  showToast();
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+function renderFoods(list) {
+  const grid = document.getElementById('food-grid');
+  grid.innerHTML = list.map(f => `
+    <div class="card" data-cat="${f.cat}">
+      <div class="food-emoji">${f.emoji}</div>
+      <div class="card-body">
+        <div class="food-name">${f.name}</div>
+        <div class="food-cat">${f.cat}</div>
+        <div class="food-bottom">
+          <span class="food-price">₹${f.price}</span>
+          <button class="add-btn" onclick="addToCart(${f.id})">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCat(cat, btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFoods(cat === 'All' ? FOODS : FOODS.filter(f => f.cat === cat));
+}
+
+// Init
+renderFoods(FOODS);
+updateCartBadge();
+</script>
+</body>
+</html>

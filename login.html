@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>QuickBite – Login</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #212121; font-family: 'Segoe UI', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+  .brand { text-align: center; margin-bottom: 32px; }
+  .brand .icon { font-size: 48px; }
+  .brand h1 { color: #FFC107; font-size: 34px; font-weight: 900; letter-spacing: 1px; }
+  .brand p { color: #aaa; font-size: 14px; margin-top: 4px; }
+  .card { background: #2c2c2c; border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 380px; }
+  .tabs { display: flex; background: #212121; border-radius: 10px; margin-bottom: 24px; overflow: hidden; }
+  .tab { flex: 1; padding: 10px; text-align: center; color: #aaa; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; border: none; background: transparent; }
+  .tab.active { background: #FFC107; color: #212121; border-radius: 10px; }
+  input {
+    width: 100%; padding: 14px 16px; border-radius: 12px;
+    background: #3a3a3a; border: 1.5px solid #444; color: #FFC107;
+    font-size: 15px; margin-bottom: 14px; outline: none;
+    transition: border 0.2s;
+  }
+  input:focus { border-color: #FFC107; }
+  input::placeholder { color: #777; }
+  .btn-primary {
+    width: 100%; padding: 15px; background: #FFC107; color: #212121;
+    border: none; border-radius: 12px; font-size: 16px; font-weight: 800;
+    cursor: pointer; transition: transform 0.1s, opacity 0.2s;
+    letter-spacing: 1px; margin-top: 4px;
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+  .error { color: #ff5252; font-size: 13px; text-align: center; margin-top: 10px; min-height: 18px; }
+  .divider { text-align: center; color: #555; margin: 16px 0; font-size: 13px; }
+  #signup-form { display: none; }
+</style>
+</head>
+<body>
+<div class="brand">
+  <div class="icon">⚡</div>
+  <h1>QuickBite</h1>
+  <p>Sign in to continue</p>
+</div>
+<div class="card">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('login')">Log In</button>
+    <button class="tab" onclick="showTab('signup')">Sign Up</button>
+  </div>
+
+  <div id="login-form">
+    <input type="email" id="login-email" placeholder="Email Address" />
+    <input type="password" id="login-pass" placeholder="Password" />
+    <button class="btn-primary" onclick="doLogin()">LOG IN</button>
+    <div class="error" id="login-error"></div>
+  </div>
+
+  <div id="signup-form">
+    <input type="text" id="signup-name" placeholder="Your Name" />
+    <input type="email" id="signup-email" placeholder="Email Address" />
+    <input type="password" id="signup-pass" placeholder="Password (min 6 chars)" />
+    <button class="btn-primary" onclick="doSignup()">CREATE ACCOUNT</button>
+    <div class="error" id="signup-error"></div>
+  </div>
+</div>
+
+<script>
+  function showTab(tab) {
+    document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup'));
+    });
+  }
+
+  function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    const err = document.getElementById('login-error');
+    if (!email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
+    const stored = localStorage.getItem('user_' + email);
+    if (!stored || stored !== pass) { err.textContent = 'Incorrect email or password.'; return; }
+    localStorage.setItem('currentUser', email);
+    localStorage.setItem('userName', localStorage.getItem('name_' + email) || email.split('@')[0]);
+    window.location.href = 'menu.html';
+  }
+
+  function doSignup() {
+    const name = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const pass = document.getElementById('signup-pass').value;
+    const err = document.getElementById('signup-error');
+    if (!name || !email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
+    if (pass.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
+    localStorage.setItem('user_' + email, pass);
+    localStorage.setItem('name_' + email, name);
+    localStorage.setItem('currentUser', email);
+    localStorage.setItem('userName', name);
+    window.location.href = 'menu.html';
+  }
+</script>
+</body>
+</html>

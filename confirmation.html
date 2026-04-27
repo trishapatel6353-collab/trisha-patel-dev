@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>QuickBite – Order Confirmed!</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #212121; font-family: 'Segoe UI', sans-serif; padding: 24px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .check { font-size: 80px; animation: pop 0.5s ease; }
+  @keyframes pop { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  h1 { color: #FFC107; font-size: 30px; font-weight: 900; margin-top: 12px; text-align: center; }
+  .subtitle { color: #aaa; font-size: 15px; margin-top: 8px; text-align: center; }
+  .eta {
+    background: #FFC107; color: #212121; border-radius: 12px;
+    padding: 10px 22px; font-weight: 800; font-size: 15px;
+    margin-top: 20px;
+  }
+  .card {
+    background: #2c2c2c; border-radius: 18px; padding: 20px;
+    width: 100%; max-width: 380px; margin-top: 24px;
+  }
+  .card-title { color: #FFC107; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+  .detail-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .detail-icon { font-size: 18px; }
+  .detail-text { color: #fff; font-size: 14px; }
+  .detail-text span { color: #FFC107; font-weight: 700; }
+  .divider { border: none; border-top: 1px solid #444; margin: 14px 0; }
+  .items-title { color: #aaa; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+  .order-item { color: #ccc; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #3a3a3a; }
+  .order-item:last-child { border: none; }
+  .total-line { display: flex; justify-content: space-between; margin-top: 12px; }
+  .total-label { color: #aaa; font-size: 15px; }
+  .total-val { color: #FFC107; font-size: 20px; font-weight: 900; }
+  .actions { width: 100%; max-width: 380px; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .btn-primary { width: 100%; padding: 15px; background: #FFC107; color: #212121; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; text-decoration: none; text-align: center; display: block; }
+  .btn-secondary { width: 100%; padding: 15px; background: #2c2c2c; color: #FFC107; border: 1.5px solid #444; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; display: block; }
+</style>
+</head>
+<body>
+
+<div class="check">✅</div>
+<h1>Order Placed!</h1>
+<p class="subtitle">Thank you for ordering from QuickBite!</p>
+<div class="eta">🚀 Estimated Delivery: 30–45 mins</div>
+
+<div class="card" id="order-summary"></div>
+
+<div class="actions">
+  <a class="btn-primary" href="menu.html">ORDER AGAIN 🔄</a>
+  <a class="btn-secondary" href="history.html">📋 View Order History</a>
+</div>
+
+<script>
+const order = JSON.parse(localStorage.getItem('lastOrder') || '{}');
+if (order.total) {
+  document.getElementById('order-summary').innerHTML = `
+    <p class="card-title">Order Summary</p>
+    <div class="detail-row"><span class="detail-icon">📍</span><div class="detail-text">Address: <span>${order.address}</span></div></div>
+    <div class="detail-row"><span class="detail-icon">💳</span><div class="detail-text">Payment: <span>${order.payment}</span></div></div>
+    <hr class="divider">
+    <p class="items-title">Items Ordered</p>
+    ${(order.items || []).map(i => `<div class="order-item">${i.emoji} ${i.name} × ${i.qty}</div>`).join('')}
+    <div class="total-line">
+      <span class="total-label">Total Paid</span>
+      <span class="total-val">₹${order.total}</span>
+    </div>`;
+} else {
+  document.getElementById('order-summary').innerHTML = '<p style="color:#aaa;text-align:center">No order details found.</p>';
+}
+</script>
+</body>
+</html>
